@@ -1,10 +1,24 @@
 'use strict';
 
 // Import modules
-const express = require('express');
+const db = require('./db').models;
 
 // Construct a router instance
+const express = require('express');
 const router = express.Router();
+
+// Async Handler Helper Function
+function asyncHandler(cb) {
+  return async (req, res, next) => {
+    try {
+      await cb(req, res, next);
+    } catch (error) {
+      res.status(500).json({
+        message: error.message
+      });
+    }
+  };
+}
 
 // USER ROUTES
 
@@ -24,10 +38,10 @@ router.get('/users', (req, res) => {
  // COURSE ROUTES
   
   // GET /api/courses 200 - Returns a list of courses (including the user that owns each course)
-  router.get('/courses', (req, res) => {
-    const testData = { 'user': 'list of courses' };
-    res.json(testData);
-});
+  router.get('/courses', asyncHandler(async (req, res) => {
+    const courses = await db.Course.findAll();
+    res.status(200).json(courses).end();
+}));
   
   // GET /api/courses/:id 200 - Returns the course (including the user that owns the course) for the provided course ID
   router.get('/courses/:id', (req, res) => {

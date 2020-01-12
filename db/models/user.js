@@ -1,8 +1,8 @@
 const Sequelize = require('sequelize');
 
 module.exports = (sequelize) => {
-    class Users extends Sequelize.Model {}
-    Users.init({
+    class User extends Sequelize.Model {}
+    User.init({
         id: {
             type: Sequelize.INTEGER,
             primaryKey: true,
@@ -71,8 +71,8 @@ module.exports = (sequelize) => {
         }, 
     }, { sequelize });
 
-    Users.associate = (models) => {
-        Users.hasMany(models.Courses, {
+    User.associate = (models) => {
+        User.hasMany(models.Course, {
             as: 'owner', // Alias
             foreignKey: {
                 fieldName: 'userId',
@@ -81,5 +81,5 @@ module.exports = (sequelize) => {
         });
     };
 
-return Users;
+return User;
 };
