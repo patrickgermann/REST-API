@@ -14,6 +14,9 @@ const app = express();
 // setup morgan which gives us http request logging
 app.use(morgan('dev'));
 
+// Express middleware to parse incoming json
+app.use(express.json());
+
 // use routes.js for /api-routes
 app.use('/api', routes);
 

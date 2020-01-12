@@ -15,7 +15,7 @@ module.exports = (sequelize) => {
       validate: {
         notEmpty: {
           args: true,
-          msg: 'Please Provide a "Title"!'
+          msg: 'Please provide a "Title"!'
         },
         notNull: {
           args: true,
