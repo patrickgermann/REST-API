@@ -88,12 +88,13 @@ const authenticateUser = asyncHandler(async (req, res, next) => {
 
 router.get('/users', authenticateUser, asyncHandler(async (req, res) => {
   const user = await req.currentUser;
-  res.json({
+  console.log(user);
+  res.status(200).json({
     id: user.id,
     firstName: user.firstName,
     lastName: user.lastName,
     emailAddress: user.emailAddress,
-  }).status(200).end();
+  }).end();
 }));
   
 // POST /users 201 - Creates a user, sets the Location header to "/", and returns no content
@@ -112,7 +113,7 @@ router.post('/users', asyncHandler(async (req, res) => {
 
 // GET /api/courses 200 - Returns a list of courses (including the user that owns each course)
   router.get('/courses', asyncHandler(async (req, res) => {
-    const courses = await db.Course.findAll();
+    const courses = await db.Course.findAll({attributes: { exclude: ["createdAt", "updatedAt"] }}); // exclude TimeStamps
     res.status(200).json(courses).end();
 }));
   
@@ -120,7 +121,13 @@ router.post('/users', asyncHandler(async (req, res) => {
   router.get('/courses/:id', asyncHandler(async (req, res) => {
     const course = await db.Course.findByPk(req.params.id);
   if (course) {
-    res.status(200).json(course).end();
+    res.status(200).json({
+      id: course.id,
+      title: course.title,
+      description: course.description,
+      estimatedTime: course.estimatedTime,
+      materialsNeeded: course.materialsNeeded
+    }).end();
   } else {
     res.status(400).json({message: 'Sorry, a course with this title is unavailable'}).end();
   }
