@@ -119,15 +119,19 @@ router.post('/users', asyncHandler(async (req, res) => {
   
   // GET /api/courses/:id 200 - Returns the course (including the user that owns the course) for the provided course ID
   router.get('/courses/:id', asyncHandler(async (req, res) => {
-    const course = await db.Course.findByPk(req.params.id);
+    const course = await db.Course.findByPk(req.params.id, {
+      attributes: { exclude: [ 'createdAt', 'updatedAt'] },
+      include: [
+        {
+          model: db.User,
+          as: 'owner',
+          attributes: { exclude: [ 'password', 'createdAt', 'updatedAt'] }
+        }
+      ]
+    });
+    console.log(course);
   if (course) {
-    res.status(200).json({
-      id: course.id,
-      title: course.title,
-      description: course.description,
-      estimatedTime: course.estimatedTime,
-      materialsNeeded: course.materialsNeeded
-    }).end();
+    res.status(200).json(course).end();
   } else {
     res.status(400).json({message: 'Sorry, a course with this title is unavailable'}).end();
   }
