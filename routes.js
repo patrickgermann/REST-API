@@ -98,13 +98,22 @@ router.get('/users', authenticateUser, asyncHandler(async (req, res) => {
 }));
   
 // POST /users 201 - Creates a user, sets the Location header to "/", and returns no content
+
 router.post('/users', asyncHandler(async (req, res) => {
-  let user = req.body;
+  const user = req.body;
   if (user.password) {
-    user.password = bcryptjs.hashSync(user.password);
+    user.password = await bcryptjs.hashSync(user.password); // Hash password for database
   }
-  await db.User.create(user);
-  res.status(201).location('/').end();
+
+  // Add the user to the db
+   db.User.create(user).then(() => {
+      // if validation is ok, create user
+      res.status(201).location('/').json().end()
+    }).catch(Sequelize.ValidationError, (error) => {
+      // if validation throws errors, send message
+      let errMessage = error.errors.map(error => error.message);
+      res.status(400).json({ error:errMessage });
+    });
 }));
 
 //
